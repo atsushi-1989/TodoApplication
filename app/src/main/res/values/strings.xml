@@ -1,17 +1,29 @@
 <resources>
-    <string name="app_name">TodoApplication</string>
+    <!-- TODO TextViewにアンダーラインを引きたい場合はstrings.xmlファイル内で<u></u>を使えばいい -->
+    <string name="app_name">SimpleTODO</string>
     <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="title_activity_edit">Edit</string>
+    <string name="title_activity_detail">Detail</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_detail">DetailActivity</string>
-    <string name="title_activity_edit">EditActivity</string>
+    <!-- menuのタイトル -->
+    <string name="sort">Sort</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="register">Register</string>
+    <string name="about">About this App</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- task detail-->
+    <string name="deadline">DeadLine</string>
+    <string name="task_detail">Task Detail</string>
+    <string name="check_if_completed">Completed</string>
+    
+
+    <!-- task edit-->
+    <string name="title">Title</string>
+    <string name="todo_detail">TODO Detail</string>
+    <string name="error">"Title" and "DeadLine" are both required.</string>
+
+    <!--about this app -->
+    <string name="about_this_app">This app is simplest to-do management tool.</string>
+
 </resources>
