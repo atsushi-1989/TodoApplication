@@ -1,5 +1,6 @@
 package jp.tominaga.atsushi.todoapplication
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import com.google.android.material.snackbar.Snackbar
@@ -7,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 import kotlinx.android.synthetic.main.activity_edit.*
 
-class EditActivity : AppCompatActivity() {
+class EditActivity : AppCompatActivity(), EditFragment.OnFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +52,10 @@ class EditActivity : AppCompatActivity() {
 
         }
         return true
+    }
+
+    override fun onFragmentInteaction(uri: Uri) {
+        TODO("Not yet implemented")
     }
 
 }

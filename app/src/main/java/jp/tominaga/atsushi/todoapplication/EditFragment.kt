@@ -1,18 +1,21 @@
 package jp.tominaga.atsushi.todoapplication
 
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_edit.*
+import java.lang.RuntimeException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_title = IntentKey.TITLE.name
-private const val ARG_deadline = IntentKey.DEADLINE.name
-private const val ARG_taskDetail = IntentKey.TASK_DETAIL.name
-private const val ARG_isCompleted = IntentKey.IS_COMPLETED.name
-private const val ARG_mode = IntentKey.MODE_IN_EDIT.name
+private val ARG_title = IntentKey.TITLE.name
+private val ARG_deadline = IntentKey.DEADLINE.name
+private val ARG_taskDetail = IntentKey.TASK_DETAIL.name
+private val ARG_isCompleted = IntentKey.IS_COMPLETED.name
+private val ARG_mode = IntentKey.MODE_IN_EDIT.name
 
 /**
  * A simple [Fragment] subclass.
@@ -21,14 +24,27 @@ private const val ARG_mode = IntentKey.MODE_IN_EDIT.name
  */
 class EditFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var title: String? = ""
+    private var deadline : String? = ""
+    private var taskDetail : String? = ""
+    private var isCompleted : Boolean = false
+    private var mode : ModeInEdit? = null
+
+    private var mListener: OnFragmentInteractionListener? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            title = it.getString(ARG_title)
+            deadline = it.getString(ARG_deadline)
+            taskDetail = it.getString(ARG_taskDetail)
+            isCompleted = it.getBoolean(ARG_isCompleted)
+            mode = it.getSerializable(ARG_mode) as ModeInEdit
+
+
+
         }
     }
 
@@ -36,8 +52,66 @@ class EditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val view = inflater.inflate(R.layout.fragment_edit, container, false)
+        setHasOptionsMenu(true)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit, container, false)
+        return view
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Log.d("EditMode","EditFragment#onActivityCreared: " + mode.toString())
+        updateUi(mode!!)
+
+    }
+
+    private fun updateUi(mode : ModeInEdit) {
+        //画面の更新処理
+        when(mode){
+            ModeInEdit.NEW_ENTRY -> {
+                checkBox.visibility = View.INVISIBLE
+            }
+
+            ModeInEdit.EDIT -> {
+
+            }
+        }
+
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.apply {
+            findItem(R.id.menu_delete).isVisible = false
+            findItem(R.id.menu_edit).isVisible = false
+            findItem(R.id.menu_register).isVisible = true
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentInteractionListener){
+            mListener = context
+        } else {
+            throw RuntimeException(context.toString() + "must impement OnFramentIteractionLstner")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        //Todo DBへの登録処理
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    interface OnFragmentInteractionListener{
+        fun onFragmentInteaction(uri: Uri)
     }
 
     companion object {
