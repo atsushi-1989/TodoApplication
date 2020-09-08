@@ -1,6 +1,7 @@
 package jp.tominaga.atsushi.todoapplication
 
 import android.os.Bundle
+import android.view.Menu
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 
@@ -13,10 +14,43 @@ class EditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        //もどるアイコン
+        toolbar.apply {
+            setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
+            setNavigationOnClickListener {
+                finish()
+            }
         }
+
+        //MainActivityからのインテント受取
+        val bundle = intent.extras
+        val title = bundle!!.getString(IntentKey.TITLE.name)
+        val deadline = bundle.getString(IntentKey.DEADLINE.name)
+        val taskDetail = bundle.getString(IntentKey.TASK_DETAIL.name)
+        val isCompleted = bundle.getBoolean(IntentKey.IS_COMPLETED.name)
+        val mode = bundle.getSerializable(IntentKey.TITLE.name) as ModeInEdit
+
+        //EditFragmentを開く
+        supportFragmentManager.beginTransaction()
+            .add(R.id.container_detail,
+                EditFragment.newInstance(title!!, deadline!!, taskDetail!!, isCompleted, mode),
+                FragmentTag.EDIT.toString()).commit()
+
+
+
+
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main,menu)
+        menu!!.apply{
+            findItem(R.id.menu_delete).isVisible = false
+            findItem(R.id.menu_edit).isVisible = false
+            findItem(R.id.menu_register).isVisible = false
+
+        }
+        return true
     }
 
 }

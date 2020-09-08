@@ -8,8 +8,11 @@ import android.view.ViewGroup
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_title = IntentKey.TITLE.name
+private const val ARG_deadline = IntentKey.DEADLINE.name
+private const val ARG_taskDetail = IntentKey.TASK_DETAIL.name
+private const val ARG_isCompleted = IntentKey.IS_COMPLETED.name
+private const val ARG_mode = IntentKey.MODE_IN_EDIT.name
 
 /**
  * A simple [Fragment] subclass.
@@ -48,11 +51,15 @@ class EditFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(title: String, deadline: String, taskDetail: String, isCompleted: Boolean,mode: ModeInEdit) =
             EditFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    putString(ARG_title,title)
+                    putString(ARG_deadline,deadline)
+                    putString(ARG_taskDetail,taskDetail)
+                    putBoolean(ARG_isCompleted,isCompleted)
+                    putSerializable(ARG_mode,mode)
+
                 }
             }
     }
