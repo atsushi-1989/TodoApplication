@@ -3,12 +3,13 @@ package jp.tominaga.atsushi.todoapplication
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
+import android.widget.EditText
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 
 import kotlinx.android.synthetic.main.activity_edit.*
 
-class EditActivity : AppCompatActivity(), EditFragment.OnFragmentInteractionListener {
+class EditActivity : AppCompatActivity(), EditFragment.OnFragmentInteractionListener,DatePickerDialogFragment.OnDateSetListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +55,25 @@ class EditActivity : AppCompatActivity(), EditFragment.OnFragmentInteractionList
         return true
     }
 
-    override fun onFragmentInteaction(uri: Uri) {
-        TODO("Not yet implemented")
+
+
+    //EditFragment.OnFragmentInteractionListener
+    override fun onDatePickerLaunched() {
+        //TODO DatePickerFragmentを開く処理
+        DatePickerDialogFragment().show(supportFragmentManager, FragmentTag.DATE_PICKER.toString())
+    }
+
+
+    //EditFragment.OnFragmentInteractionListener
+    override fun onDataEdited() {
+        finish()
+    }
+
+    //DatePickerDialogFragment.OnDateSetListener
+    override fun onDateSelected(dateString: String) {
+        val inputDateText = findViewById<EditText>(R.id.inputDateText) as EditText
+        inputDateText.setText(dateString)
+
     }
 
 }

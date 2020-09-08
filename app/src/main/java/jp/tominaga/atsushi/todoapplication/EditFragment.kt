@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_edit.*
 import java.lang.RuntimeException
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -63,6 +66,9 @@ class EditFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         Log.d("EditMode","EditFragment#onActivityCreared: " + mode.toString())
         updateUi(mode!!)
+        imageButtonDateSet.setOnClickListener {
+            mListener!!.onDatePickerLaunched()
+        }
 
     }
 
@@ -81,14 +87,7 @@ class EditFragment : Fragment() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        menu.apply {
-            findItem(R.id.menu_delete).isVisible = false
-            findItem(R.id.menu_edit).isVisible = false
-            findItem(R.id.menu_register).isVisible = true
-        }
-    }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -104,14 +103,92 @@ class EditFragment : Fragment() {
         mListener = null
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        //Todo DBへの登録処理
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.apply {
+            findItem(R.id.menu_delete).isVisible = false
+            findItem(R.id.menu_edit).isVisible = false
+            findItem(R.id.menu_register).isVisible = true
+        }
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item!!.itemId == R.id.menu_register) recordToRealmDB(mode)
         return super.onOptionsItemSelected(item)
     }
 
+    private fun recordToRealmDB(mode: ModeInEdit?) {
+        //タイトルと期日両方がセットされていないと登録できない
+        val isRequiredItemsFilled = isRequiredFilledCheck()
+        if (!isRequiredItemsFilled) return
+
+        when(mode){
+            ModeInEdit.NEW_ENTRY -> addNewTodo()
+            ModeInEdit.EDIT -> editExistingTodo()
+        }
+
+        mListener?.onDataEdited()
+        requireFragmentManager().beginTransaction().remove(this).commit()
+
+
+    }
+
+    private fun isRequiredFilledCheck(): Boolean {
+        if(inputTitleText.text.toString() == ""){
+            inputTitle.error = getString(R.string.error)
+            return false
+        }
+
+        if(!inputDateCheck(inputDateText.text.toString())){
+            inputDate.error = getString(R.string.error)
+            return false
+        }
+
+//        if (inputDateText.text.toString() == ""){
+//            inputDate.error = getString(R.string.error)
+//            return false
+//
+//        }
+
+        return true
+
+    }
+
+    private fun inputDateCheck(inputDate: String): Boolean {
+        if(inputDate == "") return false
+        try{
+            val format = SimpleDateFormat("yyyy/MM/dd")
+            format.isLenient = false
+            format.parse(inputDate)
+        }catch (e: ParseException){
+            return false
+        }
+        return true
+    }
+
+    private fun editExistingTodo() {
+        TODO("Not yet implemented")
+    }
+
+    private fun addNewTodo() {
+        val realm = Realm.getDefaultInstance()
+        realm.beginTransaction()
+        val newTodo = realm.createObject(TodoModel::class.java)
+        newTodo.apply {
+            title = inputTitleText.text.toString()
+            deadline = inputDateText.text.toString()
+            taskDetail = inputDetailText.text.toString()
+            isCompleted = if (checkBox.isChecked) true else false
+        }
+        realm.commitTransaction()
+
+        realm.close()
+    }
+
+
     interface OnFragmentInteractionListener{
-        fun onFragmentInteaction(uri: Uri)
+        fun onDatePickerLaunched()
+        fun onDataEdited()
     }
 
     companion object {

@@ -7,12 +7,15 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.FrameLayout
+import com.google.android.material.textfield.TextInputEditText
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.fragment_edit.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionListener, DatePickerDialogFragment.OnDateSetListener{
 
     var isTwoPane: Boolean = false
 
@@ -79,6 +82,22 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    // EditFragment.OnFragmentInteractionListener
+    override fun onDatePickerLaunched() {
+        DatePickerDialogFragment().show(supportFragmentManager, FragmentTag.DATE_PICKER.toString())
+    }
+
+    //EditFragment.OnFragmentInteractionListener
+    override fun onDataEdited() {
+        // Todo リストの更新処理
+    }
+
+    //DatePickerDialogFragment.OnDateSetListener
+    override fun onDateSelected(dateString: String) {
+        val inputDateText = findViewById<EditText>(R.id.inputDateText) as EditText
+        inputDateText.setText(dateString)
+
+    }
 
 
 }
