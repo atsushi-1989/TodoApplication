@@ -10,7 +10,7 @@ import io.realm.RealmResults
 
 
 import jp.tominaga.atsushi.todoapplication.MasterFragment.OnListFragmentInteractionListener
-import jp.tominaga.atsushi.todoapplication.dummy.DummyContent.DummyItem
+
 
 import kotlinx.android.synthetic.main.fragment_master.view.*
 import java.text.SimpleDateFormat
@@ -30,10 +30,10 @@ class MyMasterRecyclerViewAdapter(
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
+            val item = v.tag as TodoModel
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onListItemClickd(item)
         }
     }
 
@@ -48,7 +48,7 @@ class MyMasterRecyclerViewAdapter(
         holder.textViewTitle.text = mValues[position]?.title
         holder.textViewDeadline.text = MyApplication.appContext.getString(R.string.deadline) + " : " + mValues[position]?.deadline
          //Cardの先頭画像(期限切れの場合とまだの場合で分ける)
-        val changedDeadline = SimpleDateFormat("yyyy/MM/dd").parse(mValues[position].toString())
+        val changedDeadline = SimpleDateFormat("yyyy/MM/dd").parse(mValues[position]!!.deadline)
         val today = Date()
         if(today >= changedDeadline){
             holder.imageStatus.setImageResource(R.drawable.ic_warning_black_24dp)
@@ -64,6 +64,7 @@ class MyMasterRecyclerViewAdapter(
     }
 
     override fun getItemCount(): Int = mValues.size
+
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val textViewTitle : TextView

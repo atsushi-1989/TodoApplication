@@ -80,6 +80,10 @@ class EditFragment : Fragment() {
             }
 
             ModeInEdit.EDIT -> {
+                inputTitleText.setText(title)
+                inputDateText.setText(deadline)
+                inputDetailText.setText(taskDetail)
+                if (isCompleted) checkBox.isChecked = true else checkBox.isChecked = false
 
             }
         }
@@ -167,7 +171,23 @@ class EditFragment : Fragment() {
     }
 
     private fun editExistingTodo() {
-        TODO("Not yet implemented")
+        var realm = Realm.getDefaultInstance()
+        val selectedTodo = realm.where(TodoModel::class.java)
+            .equalTo(TodoModel::title.name,title)
+            .equalTo(TodoModel::deadline.name, deadline)
+            .equalTo(TodoModel::taskDetail.name, taskDetail)
+            .findFirst()
+
+        realm.beginTransaction()
+        selectedTodo!!.apply {
+            title = inputTitleText.text.toString()
+            deadline = inputDateText.text.toString()
+            taskDetail = inputDetailText.text.toString()
+            isCompleted = if (checkBox.isChecked) true else false
+        }
+        realm.commitTransaction()
+
+        realm.close()
     }
 
     private fun addNewTodo() {
@@ -202,7 +222,7 @@ class EditFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(title: String, deadline: String, taskDetail: String, isCompleted: Boolean,mode: ModeInEdit) =
+        fun newInstance(title: String?, deadline: String?, taskDetail: String?, isCompleted: Boolean,mode: ModeInEdit?) =
             EditFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_title,title)

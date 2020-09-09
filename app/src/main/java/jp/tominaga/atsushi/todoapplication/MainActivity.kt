@@ -7,6 +7,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
 import com.google.android.material.textfield.TextInputEditText
@@ -15,7 +16,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.fragment_edit.*
 
-class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionListener, DatePickerDialogFragment.OnDateSetListener{
+class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionListener,
+                        DatePickerDialogFragment.OnDateSetListener,
+                        MasterFragment.OnListFragmentInteractionListener,
+                        DetailFragment.OnFragmentInteractionListener{
 
     var isTwoPane: Boolean = false
 
@@ -34,6 +38,7 @@ class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionLis
             goEditScreen("","","",false,ModeInEdit.NEW_ENTRY)
         }
 
+
     }
 
     override fun onResume() {
@@ -43,15 +48,26 @@ class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionLis
 
     private fun goEditScreen(title : String, deadline : String, taskDetail: String, isCompleted: Boolean, mode: ModeInEdit) {
         if(isTwoPane){
+            fab.visibility = View.INVISIBLE
 //            val fragmentManager = supportFragmentManager
 //            val fragmentTransaction = fragmentManager.beginTransaction()
 //            fragmentTransaction.add(R.id.container_detail,EditFragment.newInstance("1","1"))
 //            fragmentTransaction.commit()
+            if (supportFragmentManager.findFragmentByTag(FragmentTag.EDIT.toString()) == null &&
+                supportFragmentManager.findFragmentByTag(FragmentTag.DETAIL.toString()) == null) {
 
-            supportFragmentManager.beginTransaction()
-                .add(R.id.container_detail,
-                    EditFragment.newInstance(title, deadline, taskDetail, isCompleted, mode),
-                    FragmentTag.EDIT.toString()).commit()
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.container_detail,
+                        EditFragment.newInstance(title, deadline, taskDetail, isCompleted, mode),
+                        FragmentTag.EDIT.toString()).commit()
+            }else{
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container_detail,
+                        EditFragment.newInstance(title, deadline, taskDetail, isCompleted, mode),
+                        FragmentTag.EDIT.toString()).commit()
+            }
+
+
             return
         }
 
@@ -98,7 +114,9 @@ class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionLis
     //タブレットの場合のリスト更新
     override fun onDataEdited() {
         // Todo リストの更新処理
+        if (isTwoPane) fab.visibility = View.VISIBLE
         updateTodoList()
+
     }
 
     private fun updateTodoList() {
@@ -111,6 +129,51 @@ class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionLis
         val inputDateText = findViewById<EditText>(R.id.inputDateText) as EditText
         inputDateText.setText(dateString)
 
+    }
+
+    //MasterFragment.OnListFragmentInteractionListener
+    override fun onListItemClickd(item: TodoModel) {
+        goDetailScreen(item.title, item.deadline, item.taskDetail, item.isCompeted)
+
+    }
+
+    private fun goDetailScreen(title: String, deadline: String, taskDetail: String, isCompleted: Boolean) {
+        if (isTwoPane){
+            if (supportFragmentManager.findFragmentByTag(FragmentTag.EDIT.toString()) == null &&
+                    supportFragmentManager.findFragmentByTag(FragmentTag.DETAIL.toString()) == null){
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.container_detail,
+                        DetailFragment.newInstance(title, deadline, taskDetail, isCompleted),
+                        FragmentTag.DETAIL.toString()).commit()
+
+            }else{
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container_detail,
+                        DetailFragment.newInstance(title, deadline, taskDetail, isCompleted),
+                        FragmentTag.DETAIL.toString()).commit()
+
+            }
+            return
+        }
+        val intent = Intent(this@MainActivity,DetailActivity::class.java).apply {
+            putExtra(IntentKey.TITLE.name,title)
+            putExtra(IntentKey.DEADLINE.name,deadline)
+            putExtra(IntentKey.TASK_DETAIL.name,taskDetail)
+            putExtra(IntentKey.IS_COMPLETED.name,isCompleted)
+
+        }
+        startActivity(intent)
+    }
+
+    //DetailFragment.OnFragmetInteractionListener
+    override fun onDataDeleted() {
+        updateTodoList()
+    }
+
+
+    //DetailFragment.OnFragmetInteractionListener
+    override fun onEditSelectedTodo(title: String, deadline: String, taskDetail: String, isCompleted: Boolean, mode: ModeInEdit) {
+        goEditScreen(title, deadline, taskDetail, isCompleted, mode)
     }
 
 

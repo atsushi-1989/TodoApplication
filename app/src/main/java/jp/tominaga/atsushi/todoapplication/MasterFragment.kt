@@ -9,8 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.Realm
 
-import jp.tominaga.atsushi.todoapplication.dummy.DummyContent
-import jp.tominaga.atsushi.todoapplication.dummy.DummyContent.DummyItem
+
 
 /**
  * A fragment representing a list of Items.
@@ -100,7 +99,7 @@ class MasterFragment : Fragment() {
      */
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem?)
+        fun onListItemClickd(item: TodoModel)
     }
 
     companion object {
