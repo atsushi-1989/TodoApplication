@@ -27,11 +27,18 @@ class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionLis
         //スマホかタブレットかを判定
         if (container_detail != null) isTwoPane = true
 
+        supportFragmentManager.beginTransaction()
+            .add(R.id.container_master,MasterFragment.newInstance(1),FragmentTag.MASTER.toString()).commit()
+
         fab.setOnClickListener { view ->
             goEditScreen("","","",false,ModeInEdit.NEW_ENTRY)
         }
 
+    }
 
+    override fun onResume() {
+        super.onResume()
+        updateTodoList()        //スマホの場合のリスト更新
     }
 
     private fun goEditScreen(title : String, deadline : String, taskDetail: String, isCompleted: Boolean, mode: ModeInEdit) {
@@ -88,8 +95,15 @@ class MainActivity : AppCompatActivity() , EditFragment.OnFragmentInteractionLis
     }
 
     //EditFragment.OnFragmentInteractionListener
+    //タブレットの場合のリスト更新
     override fun onDataEdited() {
         // Todo リストの更新処理
+        updateTodoList()
+    }
+
+    private fun updateTodoList() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container_master,MasterFragment.newInstance(1),FragmentTag.MASTER.toString()).commit()
     }
 
     //DatePickerDialogFragment.OnDateSetListener

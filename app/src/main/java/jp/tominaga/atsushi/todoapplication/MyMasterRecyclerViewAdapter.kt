@@ -4,13 +4,17 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import io.realm.RealmResults
 
 
 import jp.tominaga.atsushi.todoapplication.MasterFragment.OnListFragmentInteractionListener
 import jp.tominaga.atsushi.todoapplication.dummy.DummyContent.DummyItem
 
 import kotlinx.android.synthetic.main.fragment_master.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
@@ -18,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_master.view.*
  * TODO: Replace the implementation with code for your data type.
  */
 class MyMasterRecyclerViewAdapter(
-    private val mValues: List<DummyItem>,
+    private val mValues: RealmResults<TodoModel>,
     private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<MyMasterRecyclerViewAdapter.ViewHolder>() {
 
@@ -41,8 +45,17 @@ class MyMasterRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-        holder.mIdView.text = item.id
-        holder.mContentView.text = item.content
+        holder.textViewTitle.text = mValues[position]?.title
+        holder.textViewDeadline.text = MyApplication.appContext.getString(R.string.deadline) + " : " + mValues[position]?.deadline
+         //Cardの先頭画像(期限切れの場合とまだの場合で分ける)
+        val changedDeadline = SimpleDateFormat("yyyy/MM/dd").parse(mValues[position].toString())
+        val today = Date()
+        if(today >= changedDeadline){
+            holder.imageStatus.setImageResource(R.drawable.ic_warning_black_24dp)
+        }else{
+            holder.imageStatus.setImageResource(R.drawable.ic_work_black_24dp)
+        }
+
 
         with(holder.mView) {
             tag = item
@@ -53,11 +66,18 @@ class MyMasterRecyclerViewAdapter(
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
-        val mContentView: TextView = mView.content
+        val textViewTitle : TextView
+        val textViewDeadline : TextView
+        val imageStatus : ImageView
 
-        override fun toString(): String {
-            return super.toString() + " '" + mContentView.text + "'"
+        var mItem: TodoModel? = null
+
+        init {
+            textViewTitle = mView.findViewById<View>(R.id.textViewTitle) as TextView
+            textViewDeadline = mView.findViewById<View>(R.id.textViewDeadline) as TextView
+            imageStatus = mView.findViewById<View>(R.id.imageStatus) as ImageView
         }
+
+
     }
 }
